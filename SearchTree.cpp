@@ -12,10 +12,19 @@ private:
             delete left;
             delete right;
         }
+        Node(const Node& other) : key(other.key), left(nullptr), right(nullptr) {
+            if (other.left) {
+                left = new Node(*other.left);
+            }
+            if (other.right) {
+                right = new Node(*other.right);
+            }
+        }
+
     };
     Node* root;
 
-    bool insertRecursive(Node*& node, int key) {
+    bool insertRecursive(Node*& node, int key) { // передача указателя на узел по ссылке
         if (!node) {
             node = new Node(key);
             return true;
@@ -37,6 +46,9 @@ private:
     }
 public:
     BinarySearchTree() : root(nullptr) {}
+    BinarySearchTree(const BinarySearchTree& other) : root(nullptr) {
+        root = new Node(*other.root);
+    }
     ~BinarySearchTree() {
         delete root;
     }
@@ -51,11 +63,14 @@ public:
 
 int main() {
     BinarySearchTree tree;
-
     tree.insert(5);
     tree.insert(3);
     tree.insert(7);
-
     tree.print(); // Вывод: 3 5 7
+
+    BinarySearchTree tree2(tree); // Вызов конструктора копирования
+    std::cout << "Tree 2 (copy of Tree 1): ";
+    tree2.print(); // Вывод: 3 5 7
+
     return 0;
 }
