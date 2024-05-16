@@ -44,6 +44,19 @@ private:
             printRecursive(node->right);
         }
     }
+    bool containsRecursive(Node* node, int key) const {
+        if (!node) {
+            return false;
+        }
+        if (key < node->key) {
+            return containsRecursive(node->left, key);
+        }
+        else if (key > node->key) {
+            return containsRecursive(node->right, key);
+        }
+        return true; // элемент найден
+    }
+
 public:
     BinarySearchTree() : root(nullptr) {}
     BinarySearchTree(const BinarySearchTree& other) : root(nullptr) {
@@ -54,6 +67,9 @@ public:
     }
     bool insert(int key) {
         return insertRecursive(root, key);
+    }
+    bool contains(int key) const {
+        return containsRecursive(root, key);
     }
     void print() const {
         printRecursive(root);
@@ -84,6 +100,9 @@ int main() {
     tree3 = tree; // Вызов оператора присваивания
     std::cout << "Tree 3 = Tree 1: ";
     tree2.print(); // Вывод: 3 5 7
+
+    std::cout << tree.contains(3) << std::endl; // Вывод: 1 (true)
+    std::cout << tree.contains(10) << std::endl; // Вывод: 0 (false)
 
     return 0;
 }
