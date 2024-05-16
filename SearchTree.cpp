@@ -24,6 +24,12 @@ private:
     };
     Node* root;
 
+    size_t lcg() { //приложение А генератор псевдо-случайных чисел
+        static size_t x = 0;
+        x = (1021 * x + 24631) % 116640;
+        return x;
+    }
+
     bool insertRecursive(Node*& node, int key) { // передача указателя на узел по ссылке
         if (!node) {
             node = new Node(key);
@@ -56,6 +62,35 @@ private:
         }
         return true; // элемент найден
     }
+    void eraseNode(Node*& node) {
+        if (!node) {
+            return;
+        }
+        if (!node->left && !node->right) { // узел без дочерних элементов
+            delete node;
+            node = nullptr;
+        }
+        else if (!node->left) { // узел с одним правым дочерним элементом
+            Node* temp = node;
+            node = node->right;
+            temp->right = nullptr;
+            delete temp;
+        }
+        else if (!node->right) { // узел с одним левым дочерним элементом
+            Node* temp = node;
+            node = node->left;
+            temp->left = nullptr;
+            delete temp;
+        }
+        else { // узел с двумя дочерними элементами
+            Node* minRight = node->right;
+            while (minRight->left) {
+                minRight = minRight->left;
+            }
+            node->key = minRight->key;
+            eraseNode(minRight);
+        }
+    }
 
 public:
     BinarySearchTree() : root(nullptr) {}
@@ -71,6 +106,22 @@ public:
     bool contains(int key) const {
         return containsRecursive(root, key);
     }
+    bool erase(int key) {
+        Node** current = &root;
+        while (*current) {
+            if (key < (*current)->key) {
+                current = &((*current)->left);
+            }
+            else if (key > (*current)->key) {
+                current = &((*current)->right);
+            }
+            else {
+                eraseNode(*current);
+                return true;
+            }
+        }
+        return false; // элемент не найден
+    }
     void print() const {
         printRecursive(root);
         std::cout << std::endl;
@@ -82,7 +133,13 @@ public:
         }
         return *this;
     }
-
+    // Конструктор для заполнения дерева случайными числами
+    BinarySearchTree(int numRandomValues) : root(nullptr) {
+        srand(static_cast<unsigned int>(time(nullptr))); // инициализация генератора случайных чисел
+        for (int i = 0; i < numRandomValues; ++i) {
+            insert(lcg()); // добавляем случайное число в дерево
+        }
+    }
 };
 
 int main() {
@@ -103,6 +160,12 @@ int main() {
 
     std::cout << tree.contains(3) << std::endl; // Вывод: 1 (true)
     std::cout << tree.contains(10) << std::endl; // Вывод: 0 (false)
+
+    tree.erase(3);
+    tree.print(); // Вывод: 5 7
+
+    BinarySearchTree treeWithRandomNumbers(10); // Создаем дерево с 10 случайными числами
+    treeWithRandomNumbers.print(); // Выводим содержимое дерева
 
     return 0;
 }
