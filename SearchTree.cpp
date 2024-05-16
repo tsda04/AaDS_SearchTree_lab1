@@ -59,6 +59,14 @@ public:
         printRecursive(root);
         std::cout << std::endl;
     }
+    BinarySearchTree& operator=(const BinarySearchTree& other) {
+        if (this != &other) {
+            delete root;
+            root = new Node(*other.root);
+        }
+        return *this;
+    }
+
 };
 
 int main() {
@@ -70,6 +78,11 @@ int main() {
 
     BinarySearchTree tree2(tree); // Вызов конструктора копирования
     std::cout << "Tree 2 (copy of Tree 1): ";
+    tree2.print(); // Вывод: 3 5 7
+
+    BinarySearchTree tree3;
+    tree3 = tree; // Вызов оператора присваивания
+    std::cout << "Tree 3 = Tree 1: ";
     tree2.print(); // Вывод: 3 5 7
 
     return 0;
